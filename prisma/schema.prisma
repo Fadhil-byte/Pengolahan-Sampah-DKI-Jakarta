@@ -1,0 +1,191 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================
+// RBAC: Enum Role Pengguna
+// ============================================================
+enum Role {
+  USER
+  ADMIN
+}
+
+// ============================================================
+// Status Verifikasi Laporan oleh Admin
+// ============================================================
+enum StatusLaporan {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+// ============================================================
+// Status Penukaran Reward
+// ============================================================
+enum StatusPenukaran {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+// ============================================================
+// Soal 1 & 2: Model User
+// - UUID sebagai Primary Key
+// - Email harus unik
+// - Nomor HP harus unik
+// - NIK tidak boleh duplikat
+// - Nama wajib diisi (String = NOT NULL)
+// - role: USER (default) atau ADMIN
+// - poin: akumulasi poin dari laporan yang diverifikasi
+// ============================================================
+model User {
+  id        String   @id @default(uuid())
+  nama      String
+  email     String   @unique
+  noHp      String   @unique
+  nik       String   @unique
+  password  String
+  role      Role     @default(USER)
+  poin      Int      @default(0)
+  createdAt DateTime @default(now())
+
+  laporan        LaporanSampah[]
+  penukaran      PenukaranReward[]
+  artikelEdukasi ArtikelEdukasi[]
+}
+
+// ============================================================
+// Soal 2: Model JenisSampah
+// - UUID sebagai Primary Key
+// - Nama jenis sampah tidak boleh duplikat
+// ============================================================
+model JenisSampah {
+  id        String   @id @default(uuid())
+  namaJenis String   @unique
+
+  laporan   LaporanSampah[]
+}
+
+// ============================================================
+// Soal 2: Model Wilayah
+// - UUID sebagai Primary Key
+// - Nama wilayah tidak boleh duplikat
+// ============================================================
+model Wilayah {
+  id          String   @id @default(uuid())
+  namaWilayah    String   @unique
+
+  laporan        LaporanSampah[]
+  artikelEdukasi ArtikelEdukasi[]
+}
+
+// ============================================================
+// Soal 3: Model LaporanSampah (Foreign Key Constraints)
+// - Satu User dapat memiliki banyak laporan
+// - Satu Jenis Sampah dapat digunakan pada banyak laporan
+// - Satu Wilayah dapat memiliki banyak laporan
+// - onDelete: Cascade untuk User
+// - onDelete: Restrict untuk JenisSampah dan Wilayah
+//
+// Bonus: Composite Unique Constraint
+// - Seorang User tidak boleh membuat dua laporan dengan
+//   jenis sampah yang sama pada tanggal yang sama
+//   di wilayah yang sama.
+// ============================================================
+model LaporanSampah {
+  id            String        @id @default(uuid())
+  berat         Float
+  tanggalLapor  DateTime      @default(now())
+  catatan       String?
+  status        StatusLaporan @default(PENDING)
+  adminNote     String?
+  userId        String
+  jenisSampahId String
+  wilayahId     String
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jenisSampah JenisSampah @relation(fields: [jenisSampahId], references: [id], onDelete: Restrict)
+  wilayah     Wilayah     @relation(fields: [wilayahId], references: [id], onDelete: Restrict)
+
+  foto        FotoSampah?
+
+  @@unique([userId, jenisSampahId, wilayahId, tanggalLapor])
+}
+
+// ============================================================
+// Soal 4: Model FotoSampah (One-to-One Relationship)
+// - Satu laporan hanya boleh memiliki satu foto
+// - Setiap foto harus terhubung dengan tepat satu laporan
+// - @unique pada laporanId memastikan relasi 1-to-1
+// ============================================================
+model FotoSampah {
+  id        String        @id @default(uuid())
+  imageUrl  String
+  laporanId String        @unique
+
+  laporan   LaporanSampah @relation(fields: [laporanId], references: [id], onDelete: Cascade)
+}
+
+// ============================================================
+// Model Reward (Katalog Hadiah)
+// - Menyimpan daftar hadiah/voucher yang bisa ditukarkan
+// - poinDibutuhkan: minimum poin yang diperlukan
+// - stok: jumlah reward yang tersedia
+// ============================================================
+model Reward {
+  id             String            @id @default(uuid())
+  namaReward     String
+  deskripsi      String?
+  poinDibutuhkan Int
+  stok           Int               @default(0)
+  imageUrl       String?
+  createdAt      DateTime          @default(now())
+
+  penukaran      PenukaranReward[]
+}
+
+model PenukaranReward {
+  id            String          @id @default(uuid())
+  userId        String
+  rewardId      String
+  poinDigunakan Int
+  status        StatusPenukaran @default(PENDING)
+  tanggalTukar  DateTime        @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reward Reward @relation(fields: [rewardId], references: [id], onDelete: Restrict)
+}
+
+model KategoriArtikel {
+  id           String           @id @default(uuid())
+  namaKategori String           @unique
+  deskripsi    String?
+
+  artikel      ArtikelEdukasi[]
+}
+
+model ArtikelEdukasi {
+  id         String   @id @default(uuid())
+  judul      String
+  slug       String   @unique
+  ringkasan  String
+  konten     String
+  imageUrl   String?
+  viewsCount Int      @default(0)
+  isFeatured Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  kategoriId String
+  authorId   String?
+  wilayahId  String?
+
+  kategori   KategoriArtikel @relation(fields: [kategoriId], references: [id], onDelete: Restrict)
+  author     User?           @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  wilayah    Wilayah?        @relation(fields: [wilayahId], references: [id], onDelete: SetNull)
+}
