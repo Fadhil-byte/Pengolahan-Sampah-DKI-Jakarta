@@ -113,7 +113,167 @@ async function main() {
       })
     }
   }
-  console.log(`✅ Rewards seeded: ${rewardData.length} items`)
+  // Seed KategoriArtikel
+  const kategoriData = [
+    { namaKategori: 'Regulasi & Kebijakan', deskripsi: 'Peraturan pemerintah terkait pengelolaan sampah DKI Jakarta' },
+    { namaKategori: 'Bank Sampah', deskripsi: 'Informasi program Bank Sampah Unit di DKI Jakarta' },
+    { namaKategori: 'Daur Ulang & Inovasi', deskripsi: 'Teknologi dan inovasi pengolahan sampah' },
+    { namaKategori: 'Tips Lingkungan', deskripsi: 'Tips praktis menjaga lingkungan dan mengurangi sampah' },
+  ]
+
+  const kategoriMap = new Map<string, string>()
+  for (const kat of kategoriData) {
+    const k = await prisma.kategoriArtikel.upsert({
+      where: { namaKategori: kat.namaKategori },
+      update: {},
+      create: kat,
+    })
+    kategoriMap.set(kat.namaKategori, k.id)
+  }
+  console.log('✅ Kategori Artikel seeded:', kategoriData.map((k) => k.namaKategori).join(', '))
+
+  // Seed ArtikelEdukasi
+  const artikelData = [
+    {
+      judul: 'Wajib Pilah Sampah dari Rumah: Implementasi Pergub DKI No. 77 Tahun 2020',
+      slug: 'wajib-pilah-sampah-pergub-dki-77-2020',
+      ringkasan: 'Pemerintah Provinsi DKI Jakarta mewajibkan seluruh warga memilah sampah organik dan anorganik dari tingkat rumah tangga sebelum diangkut ke TPS.',
+      konten: `## Latar Belakang
+
+Peraturan Gubernur DKI Jakarta Nomor 77 Tahun 2020 tentang Pengelolaan Sampah Lingkungan menjadi tonggak penting dalam upaya mengatasi permasalahan sampah di ibu kota. Regulasi ini mewajibkan seluruh warga Jakarta untuk memilah sampah dari sumbernya, yakni mulai dari tingkat rumah tangga, sebelum diangkut oleh petugas kebersihan ke Tempat Penampungan Sementara (TPS).
+
+## Mengapa Pemilahan Penting?
+
+Jakarta menghasilkan lebih dari 7.700 ton sampah per hari. Tanpa pemilahan yang baik, seluruh volume sampah ini berakhir di TPA Bantar Gebang yang kapasitasnya sudah sangat terbatas. Dengan memilah sampah, volume yang masuk ke TPA bisa dikurangi hingga 30-40%.
+
+## Jenis Pemilahan yang Diwajibkan
+
+- Sampah Organik: sisa makanan, daun, sayuran, buah busuk
+- Sampah Anorganik: plastik, kertas, kaleng, botol kaca
+- Sampah B3 (Bahan Berbahaya dan Beracun): baterai, lampu neon, obat kedaluwarsa
+- Sampah Residu: popok bekas, pembalut, masker sekali pakai
+
+## Sanksi Pelanggaran
+
+Warga yang tidak mematuhi aturan pemilahan dapat dikenakan sanksi administratif berupa teguran tertulis, denda, hingga penghentian layanan pengangkutan sampah.
+
+> Pemilahan sampah dari rumah adalah langkah kecil yang berdampak besar bagi Jakarta yang lebih bersih dan berkelanjutan.`,
+      kategori: 'Regulasi & Kebijakan',
+      isFeatured: true,
+    },
+    {
+      judul: 'Mengenal Program Bank Sampah Unit (BSU) di Seluruh Kecamatan DKI Jakarta',
+      slug: 'program-bank-sampah-unit-bsu-dki-jakarta',
+      ringkasan: 'Bank Sampah Unit tersebar di setiap kecamatan DKI Jakarta sebagai solusi pengelolaan sampah berbasis masyarakat yang mengubah sampah menjadi nilai ekonomis.',
+      konten: `## Apa Itu Bank Sampah Unit?
+
+Bank Sampah Unit (BSU) adalah program pengelolaan sampah berbasis masyarakat yang memungkinkan warga untuk menyetorkan sampah anorganik yang sudah dipilah dan mendapatkan imbalan berupa uang atau poin. Program ini mirip dengan konsep menabung di bank, tetapi yang ditabung adalah sampah.
+
+## Bagaimana Cara Kerjanya?
+
+- Warga memilah dan membersihkan sampah anorganik di rumah
+- Sampah dibawa ke BSU terdekat sesuai jadwal operasional
+- Petugas BSU menimbang dan mencatat setoran sampah
+- Nilai sampah dikonversi menjadi saldo tabungan warga
+- Saldo bisa ditarik secara berkala atau digunakan untuk membayar kebutuhan
+
+## Jenis Sampah yang Diterima
+
+- Botol plastik PET (air mineral)
+- Kardus dan kertas bekas
+- Kaleng aluminium
+- Botol kaca
+- Minyak jelantah bekas
+- Elektronik bekas (e-waste)
+
+## Dampak Positif
+
+Hingga saat ini, terdapat lebih dari 3.500 BSU yang tersebar di seluruh kecamatan DKI Jakarta. Program ini telah berhasil mengurangi volume sampah yang masuk ke TPA Bantar Gebang dan memberikan tambahan penghasilan bagi ribuan keluarga di Jakarta.
+
+> Setiap kilogram sampah yang Anda setorkan ke Bank Sampah adalah kontribusi nyata untuk Jakarta yang lebih bersih.`,
+      kategori: 'Bank Sampah',
+      isFeatured: false,
+    },
+    {
+      judul: 'Krisis Bantar Gebang: Solusi Teknologi RDF untuk Mengolah Sampah Jakarta',
+      slug: 'krisis-bantar-gebang-solusi-teknologi-rdf',
+      ringkasan: 'TPA Bantar Gebang yang menampung lebih dari 39 juta ton sampah kini mencari solusi melalui teknologi Refuse Derived Fuel (RDF) untuk mengubah sampah menjadi energi.',
+      konten: `## Kondisi Terkini Bantar Gebang
+
+TPA Bantar Gebang di Kota Bekasi telah beroperasi sejak tahun 1989 dan menjadi tempat pembuangan akhir bagi seluruh sampah DKI Jakarta. Dengan luas area 110 hektar, TPA ini menampung lebih dari 39 juta ton sampah dengan ketinggian tumpukan mencapai 30 meter di beberapa titik.
+
+## Kapasitas yang Kian Menipis
+
+Setiap hari, sekitar 7.700 ton sampah dari Jakarta diangkut ke Bantar Gebang menggunakan lebih dari 1.200 truk sampah. Para ahli memperkirakan TPA ini akan mencapai kapasitas maksimumnya dalam beberapa tahun ke depan jika tidak ada intervensi signifikan.
+
+## Teknologi RDF sebagai Solusi
+
+Refuse Derived Fuel (RDF) adalah teknologi yang mengolah sampah menjadi bahan bakar alternatif untuk industri semen dan pembangkit listrik.
+
+> Teknologi RDF bukan hanya solusi untuk mengurangi timbunan sampah, tetapi juga mengubah masalah menjadi sumber energi terbarukan.`,
+      kategori: 'Daur Ulang & Inovasi',
+      isFeatured: false,
+    },
+    {
+      judul: '10 Tips Mudah Mengurangi Sampah Plastik Sekali Pakai di Kehidupan Sehari-hari',
+      slug: '10-tips-mengurangi-sampah-plastik-sekali-pakai',
+      ringkasan: 'Panduan praktis bagi warga Jakarta untuk mengurangi penggunaan plastik sekali pakai dan beralih ke gaya hidup ramah lingkungan sehari-hari.',
+      konten: `## Mengapa Harus Mengurangi Plastik?
+
+Indonesia adalah penghasil sampah plastik laut terbesar kedua di dunia. Di Jakarta sendiri, sampah plastik menyumbang sekitar 14% dari total volume sampah harian.
+
+## Tips Praktis
+
+1. Bawa tas belanja kain sendiri
+2. Gunakan tumbler dan botol minum isi ulang
+3. Tolak sedotan dan alat makan plastik sekali pakai
+4. Bawa wadah makanan saat membeli makanan bawa pulang
+5. Kompos sisa makanan organik di rumah
+
+> Setiap langkah kecil yang kita ambil hari ini menentukan kondisi lingkungan untuk generasi mendatang.`,
+      kategori: 'Tips Lingkungan',
+      isFeatured: false,
+    },
+    {
+      judul: 'Polusi Udara Jakarta dan Hubungannya dengan Pengelolaan Sampah Terbuka',
+      slug: 'polusi-udara-jakarta-pengelolaan-sampah-terbuka',
+      ringkasan: 'Pembakaran dan penimbunan sampah terbuka di Jakarta berkontribusi signifikan terhadap polusi udara. Pengelolaan sampah yang baik adalah kunci udara bersih.',
+      konten: `## Hubungan Sampah dan Polusi Udara
+
+Pembakaran sampah secara terbuka menghasilkan gas berbahaya seperti dioksin, furan, dan partikel PM2.5 yang mencemari udara Jakarta. Pemilahan yang baik dan pengolahan yang ramah lingkungan dapat menekan polusi udara secara signifikan.`,
+      kategori: 'Regulasi & Kebijakan',
+      isFeatured: false,
+    },
+    {
+      judul: 'Inovasi Daur Ulang Minyak Jelantah Menjadi Biodiesel di Jakarta',
+      slug: 'inovasi-daur-ulang-minyak-jelantah-biodiesel-jakarta',
+      ringkasan: 'Program pengumpulan minyak jelantah di Jakarta mengubah limbah dapur menjadi biodiesel ramah lingkungan, mengurangi pencemaran air dan mendukung energi terbarukan.',
+      konten: `## Mengapa Minyak Jelantah Berbahaya?
+
+Menuangkan minyak jelantah ke saluran air dapat menyumbat gorong-gorong dan mencemari badan air. Program konversi menjadi biodiesel menjadi solusi tepat guna yang ramah lingkungan dan bernilai ekonomis.`,
+      kategori: 'Daur Ulang & Inovasi',
+      isFeatured: false,
+    },
+  ]
+
+  for (const art of artikelData) {
+    const katId = kategoriMap.get(art.kategori)
+    if (!katId) continue
+    await prisma.artikelEdukasi.upsert({
+      where: { slug: art.slug },
+      update: {},
+      create: {
+        judul: art.judul,
+        slug: art.slug,
+        ringkasan: art.ringkasan,
+        konten: art.konten,
+        isFeatured: art.isFeatured,
+        kategoriId: katId,
+        viewsCount: Math.floor(Math.random() * 300) + 50,
+      },
+    })
+  }
+  console.log(`✅ Artikel Edukasi seeded: ${artikelData.length} items`)
 
   console.log('🎉 Seeding complete!')
   await prisma.$disconnect()

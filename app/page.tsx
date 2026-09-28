@@ -2,7 +2,8 @@ import { getSession } from '@/app/lib/session'
 import { prisma } from '@/app/lib/db'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import ThemeToggle from '@/app/components/ThemeToggle'
+import Navbar from '@/app/components/Navbar'
+import Footer from '@/app/components/Footer'
 
 export default async function HomePage() {
   const session = await getSession()
@@ -31,55 +32,17 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="gradient-bg-hero" style={{ minHeight: '100vh' }}>
-      {/* Decorative floating elements */}
-      <div style={{ position: 'fixed', top: '8%', left: '6%', fontSize: '4rem', opacity: 0.12 }} className="animate-float">🌿</div>
-      <div style={{ position: 'fixed', top: '15%', right: '10%', fontSize: '3rem', opacity: 0.1, animationDelay: '1s' }} className="animate-float">♻️</div>
-      <div style={{ position: 'fixed', bottom: '20%', left: '12%', fontSize: '3.5rem', opacity: 0.1, animationDelay: '1.5s' }} className="animate-float">🌍</div>
-      <div style={{ position: 'fixed', bottom: '10%', right: '8%', fontSize: '3rem', opacity: 0.1, animationDelay: '0.5s' }} className="animate-float">🍃</div>
-      <div style={{ position: 'fixed', top: '50%', left: '3%', fontSize: '2.5rem', opacity: 0.08, animationDelay: '2s' }} className="animate-float">🌱</div>
-      <div style={{ position: 'fixed', top: '40%', right: '5%', fontSize: '2rem', opacity: 0.08, animationDelay: '2.5s' }} className="animate-float">🥤</div>
+    <div className="gradient-bg-hero" style={{ minHeight: '100vh', overflowX: 'hidden' }}>
+      {/* Decorative floating elements (hidden on mobile to prevent horizontal overflow) */}
+      <div style={{ position: 'fixed', top: '8%', left: '6%', fontSize: '4rem', opacity: 0.12 }} className="animate-float hide-on-mobile">🌿</div>
+      <div style={{ position: 'fixed', top: '15%', right: '10%', fontSize: '3rem', opacity: 0.1, animationDelay: '1s' }} className="animate-float hide-on-mobile">♻️</div>
+      <div style={{ position: 'fixed', bottom: '20%', left: '12%', fontSize: '3.5rem', opacity: 0.1, animationDelay: '1.5s' }} className="animate-float hide-on-mobile">🌍</div>
+      <div style={{ position: 'fixed', bottom: '10%', right: '8%', fontSize: '3rem', opacity: 0.1, animationDelay: '0.5s' }} className="animate-float hide-on-mobile">🍃</div>
+      <div style={{ position: 'fixed', top: '50%', left: '3%', fontSize: '2.5rem', opacity: 0.08, animationDelay: '2s' }} className="animate-float hide-on-mobile">🌱</div>
+      <div style={{ position: 'fixed', top: '40%', right: '5%', fontSize: '2rem', opacity: 0.08, animationDelay: '2.5s' }} className="animate-float hide-on-mobile">🥤</div>
 
-      {/* Top Bar */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '20px 32px',
-        maxWidth: '1200px',
-        margin: '0 auto',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{ fontSize: '1.8rem' }}>♻️</span>
-          <span style={{
-            fontSize: '1.2rem',
-            fontWeight: 800,
-            background: 'linear-gradient(135deg, var(--primary-dark), var(--primary-light))',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}>
-            SampahKu
-          </span>
-        </div>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-          <Link href="/artikel" style={{
-            padding: '10px 20px', borderRadius: '12px', fontSize: '0.9rem', fontWeight: 600,
-            textDecoration: 'none', color: 'var(--primary)',
-            background: 'rgba(16, 185, 129, 0.08)', border: '1px solid var(--border)',
-            transition: 'all 0.2s',
-          }}>
-            📰 Artikel
-          </Link>
-          <ThemeToggle />
-          <Link href="/login" className="btn-secondary" style={{ textDecoration: 'none', padding: '10px 24px' }}>
-            Masuk
-          </Link>
-          <Link href="/register" className="btn-primary" style={{ textDecoration: 'none', padding: '10px 24px' }}>
-            Daftar
-          </Link>
-        </div>
-      </div>
+      {/* Top Navbar */}
+      <Navbar />
 
       {/* Hero Section */}
       <div style={{
@@ -256,15 +219,8 @@ export default async function HomePage() {
         </div>
       )}
 
-      {/* Footer */}
-      <div style={{
-        textAlign: 'center',
-        padding: '24px',
-        color: 'var(--text-muted)',
-        fontSize: '0.8rem',
-      }}>
-        © 2026 SampahKu — Sistem Pengelolaan Sampah DKI Jakarta
-      </div>
+      {/* Shared Footer */}
+      <Footer />
     </div>
   )
 }

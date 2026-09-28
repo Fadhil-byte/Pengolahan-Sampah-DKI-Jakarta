@@ -13,12 +13,16 @@ type User = {
 }
 
 async function changePassword(userId: string, oldPassword: string, newPassword: string) {
-  const res = await fetch('/api/profile/change-password', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId, oldPassword, newPassword }),
-  })
-  return res.json()
+  try {
+    const res = await fetch('/api/profile/change-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, oldPassword, newPassword }),
+    })
+    return await res.json()
+  } catch {
+    return { error: 'Gagal terhubung ke server atau respons tidak valid.' }
+  }
 }
 
 export default function ProfilForm({ user }: { user: User }) {

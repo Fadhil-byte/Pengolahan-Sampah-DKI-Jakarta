@@ -232,7 +232,7 @@ export default function RewardAdminClient({
       {/* Daftar Penukaran */}
       <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '20px' }}>🔄 Daftar Penukaran</h2>
 
-      <div style={{
+      <div className="table-responsive-wrapper" style={{
         background: 'var(--surface)', borderRadius: '16px', overflow: 'hidden',
         border: '1px solid var(--border)',
       }}>

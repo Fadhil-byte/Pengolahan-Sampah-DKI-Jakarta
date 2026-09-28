@@ -8,10 +8,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 // ============================================================
-// Soal 3 & 4: Create Laporan with nested FotoSampah
-// - Foreign keys: userId, jenisSampahId, wilayahId
-// - One-to-One: FotoSampah created inline (nested create)
-// - Soal 5: Berat > 0 validated by Zod, foto wajib validated by Zod
+// Pembuatan Laporan Sampah Baru Beserta Bukti Foto
 // ============================================================
 export async function createLaporan(
   state: LaporanFormState,
@@ -39,8 +36,7 @@ export async function createLaporan(
   const { jenisSampahId, berat, wilayahId, catatan, imageUrl } = validatedFields.data
 
   try {
-    // Soal 3: Create LaporanSampah with FK relations
-    // Soal 4: Nested create FotoSampah (One-to-One)
+    // Simpan laporan beserta bukti foto secara relasional
     await prisma.laporanSampah.create({
       data: {
         userId: session.userId,
@@ -49,7 +45,6 @@ export async function createLaporan(
         wilayahId,
         catatan: catatan || null,
         status: 'PENDING',
-        // Soal 4: Create FotoSampah dalam satu transaksi
         foto: {
           create: {
             imageUrl,

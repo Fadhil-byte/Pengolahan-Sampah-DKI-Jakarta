@@ -60,16 +60,26 @@ export default function EditLaporanForm({ laporanId, defaultValues, jenisList, w
     try {
       const uploadData = new FormData()
       uploadData.append('file', file)
-      const res = await fetch('/api/upload', { method: 'POST', body: uploadData })
-      const data = await res.json()
-      if (res.ok) {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: uploadData,
+      })
+      let data: { url?: string; error?: string } | null = null
+      try {
+        data = (await res.json()) as { url?: string; error?: string }
+      } catch {
+        // Ignored: empty or non-JSON response body
+      }
+
+      if (res.ok && data?.url) {
         setFotoUrl(data.url)
       } else {
-        setUploadError(data.error || 'Gagal upload foto.')
+        setUploadError(data?.error || `Gagal upload foto (HTTP ${res.status}).`)
         setFotoPreview(null)
       }
-    } catch {
-      setUploadError('Gagal upload foto.')
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : 'Gagal upload foto.'
+      setUploadError(errorMsg)
       setFotoPreview(null)
     } finally {
       setUploading(false)
@@ -77,17 +87,25 @@ export default function EditLaporanForm({ laporanId, defaultValues, jenisList, w
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--background)' }}>
-      <div style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)', padding: '0 24px' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '64px' }}>
-          <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none', color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.9rem' }}>
-            ← Kembali ke Dashboard
-          </Link>
-          <span style={{ fontSize: '1rem', fontWeight: 700 }}>✏️ Edit Laporan</span>
-        </div>
+    <main style={{ maxWidth: '800px', margin: '0 auto', padding: '24px 16px' }}>
+      <div className="animate-fade-in" style={{ marginBottom: '24px' }}>
+        <h1
+          style={{
+            fontSize: '1.8rem',
+            fontWeight: 800,
+            background: 'linear-gradient(135deg, var(--primary-dark), var(--primary-light))',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            marginBottom: '6px',
+          }}
+        >
+          ✏️ Edit Laporan Sampah
+        </h1>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem' }}>
+          Perbarui rincian jenis sampah, estimasi berat, lokasi wilayah, atau foto bukti sebelum diverifikasi petugas.
+        </p>
       </div>
-
-      <main style={{ maxWidth: '800px', margin: '0 auto', padding: '32px 24px' }}>
         {(state as { message?: string; success?: boolean })?.message && !(state as { success?: boolean })?.success && (
           <div className="animate-fade-in" style={{ background: 'var(--danger-light)', border: '1px solid var(--danger)', borderRadius: '12px', padding: '16px', marginBottom: '24px', color: 'var(--danger)', fontWeight: 500 }}>
             ⚠️ {(state as { message?: string }).message}
@@ -115,7 +133,7 @@ export default function EditLaporanForm({ laporanId, defaultValues, jenisList, w
           {/* Detail */}
           <div className="glass-card animate-fade-in stagger-2" style={{ opacity: 0, padding: '28px', marginBottom: '24px' }}>
             <h2 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '16px' }}>📝 Detail Laporan</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
               <div>
                 <label htmlFor="berat" className="form-label">⚖️ Berat (kg)</label>
                 <input id="berat" name="berat" type="number" step="0.1" min="0.1" className="form-input" defaultValue={defaultValues.berat} required />
@@ -171,6 +189,5 @@ export default function EditLaporanForm({ laporanId, defaultValues, jenisList, w
           </div>
         </form>
       </main>
-    </div>
   )
 }

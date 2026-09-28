@@ -34,14 +34,10 @@ enum StatusPenukaran {
 }
 
 // ============================================================
-// Soal 1 & 2: Model User
+// Model User (Pengguna & Petugas DLH)
 // - UUID sebagai Primary Key
-// - Email harus unik
-// - Nomor HP harus unik
-// - NIK tidak boleh duplikat
-// - Nama wajib diisi (String = NOT NULL)
-// - role: USER (default) atau ADMIN
-// - poin: akumulasi poin dari laporan yang diverifikasi
+// - Unique credentials: email, nomor HP, NIK
+// - Relasi ke Laporan, Penukaran Reward, dan Artikel
 // ============================================================
 model User {
   id        String   @id @default(uuid())
@@ -60,9 +56,7 @@ model User {
 }
 
 // ============================================================
-// Soal 2: Model JenisSampah
-// - UUID sebagai Primary Key
-// - Nama jenis sampah tidak boleh duplikat
+// Model JenisSampah (Kategori Sampah)
 // ============================================================
 model JenisSampah {
   id        String   @id @default(uuid())
@@ -72,30 +66,18 @@ model JenisSampah {
 }
 
 // ============================================================
-// Soal 2: Model Wilayah
-// - UUID sebagai Primary Key
-// - Nama wilayah tidak boleh duplikat
+// Model Wilayah (Kecamatan DKI Jakarta)
 // ============================================================
 model Wilayah {
   id          String   @id @default(uuid())
-  namaWilayah    String   @unique
+  namaWilayah String   @unique
 
   laporan        LaporanSampah[]
   artikelEdukasi ArtikelEdukasi[]
 }
 
 // ============================================================
-// Soal 3: Model LaporanSampah (Foreign Key Constraints)
-// - Satu User dapat memiliki banyak laporan
-// - Satu Jenis Sampah dapat digunakan pada banyak laporan
-// - Satu Wilayah dapat memiliki banyak laporan
-// - onDelete: Cascade untuk User
-// - onDelete: Restrict untuk JenisSampah dan Wilayah
-//
-// Bonus: Composite Unique Constraint
-// - Seorang User tidak boleh membuat dua laporan dengan
-//   jenis sampah yang sama pada tanggal yang sama
-//   di wilayah yang sama.
+// Model LaporanSampah (Transaksi Pelaporan Masyarakat)
 // ============================================================
 model LaporanSampah {
   id            String        @id @default(uuid())
@@ -118,10 +100,7 @@ model LaporanSampah {
 }
 
 // ============================================================
-// Soal 4: Model FotoSampah (One-to-One Relationship)
-// - Satu laporan hanya boleh memiliki satu foto
-// - Setiap foto harus terhubung dengan tepat satu laporan
-// - @unique pada laporanId memastikan relasi 1-to-1
+// Model FotoSampah (Lampiran Bukti Foto Laporan)
 // ============================================================
 model FotoSampah {
   id        String        @id @default(uuid())

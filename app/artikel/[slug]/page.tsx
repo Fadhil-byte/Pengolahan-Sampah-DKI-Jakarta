@@ -1,8 +1,9 @@
 import { prisma } from '@/app/lib/db'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import ThemeToggle from '@/app/components/ThemeToggle'
+import Navbar from '@/app/components/Navbar'
 import { getSession } from '@/app/lib/session'
+import Footer from '@/app/components/Footer'
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -24,6 +25,14 @@ export async function generateMetadata({ params }: PageProps) {
 export default async function ArtikelDetailPage({ params }: PageProps) {
   const { slug } = await params
   const session = await getSession()
+  let userName = ''
+  if (session) {
+    const user = await prisma.user.findUnique({
+      where: { id: session.userId },
+      select: { nama: true },
+    })
+    userName = user?.nama || ''
+  }
 
   const artikel = await prisma.artikelEdukasi.findUnique({
     where: { slug },
@@ -99,45 +108,12 @@ export default async function ArtikelDetailPage({ params }: PageProps) {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--background)' }}>
-      {/* Header */}
-      <nav className="glass-card" style={{
-        position: 'sticky', top: 0, zIndex: 50,
-        borderRadius: 0, borderTop: 'none', borderLeft: 'none', borderRight: 'none',
-        borderBottom: '1px solid var(--border)', padding: '0 24px',
-      }}>
-        <div style={{
-          maxWidth: '1200px', margin: '0 auto',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '64px',
-        }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-            <span style={{ fontSize: '1.5rem' }}>♻️</span>
-            <span style={{
-              fontSize: '1.1rem', fontWeight: 800,
-              background: 'linear-gradient(135deg, var(--primary-dark), var(--primary-light))',
-              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-            }}>SampahKu</span>
-          </Link>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Link href="/artikel" className="btn-secondary" style={{ textDecoration: 'none', padding: '8px 18px', fontSize: '0.85rem' }}>
-              ← Semua Artikel
-            </Link>
-            <ThemeToggle />
-            {session ? (
-              <Link href={session.role === 'ADMIN' ? '/admin' : '/dashboard'} className="btn-primary" style={{ textDecoration: 'none', padding: '8px 20px' }}>
-                {session.role === 'ADMIN' ? '⚙️ Admin' : '📊 Dashboard'}
-              </Link>
-            ) : (
-              <Link href="/login" className="btn-primary" style={{ textDecoration: 'none', padding: '8px 20px' }}>
-                Masuk
-              </Link>
-            )}
-          </div>
-        </div>
-      </nav>
+    <div className={session ? "has-mobile-bottom-nav" : ""} style={{ minHeight: '100vh', background: 'var(--background)' }}>
+      {/* Header / Nav */}
+      <Navbar userName={userName} role={session?.role} />
 
-      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '36px' }}>
+      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px 16px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: '32px' }}>
           {/* Article Content */}
           <article className="animate-fade-in">
             {/* Breadcrumb */}
@@ -296,10 +272,8 @@ export default async function ArtikelDetailPage({ params }: PageProps) {
         </div>
       </main>
 
-      {/* Footer */}
-      <div style={{ textAlign: 'center', padding: '32px 24px', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-        © 2026 SampahKu — Sistem Pengelolaan Sampah DKI Jakarta
-      </div>
+      {/* Shared Footer */}
+      <Footer />
     </div>
   )
 }

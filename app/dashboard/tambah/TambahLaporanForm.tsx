@@ -4,7 +4,6 @@ import { createLaporan } from '@/app/actions/sampah'
 import { useActionState, useState, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import ThemeToggle from '@/app/components/ThemeToggle'
 
 const JENIS_ICONS: Record<string, { icon: string; desc: string }> = {
   'Organik': { icon: '🌿', desc: 'Sisa makanan, daun, kayu' },
@@ -63,15 +62,22 @@ export default function TambahLaporanForm({ jenisList, wilayahList }: Props) {
         method: 'POST',
         body: uploadData,
       })
-      const data = await res.json()
-      if (res.ok) {
+      let data: { url?: string; error?: string } | null = null
+      try {
+        data = (await res.json()) as { url?: string; error?: string }
+      } catch {
+        // Ignored: empty or non-JSON response body
+      }
+
+      if (res.ok && data?.url) {
         setFotoUrl(data.url)
       } else {
-        setUploadError(data.error || 'Gagal upload foto.')
+        setUploadError(data?.error || `Gagal upload foto (HTTP ${res.status}).`)
         setFotoPreview(null)
       }
-    } catch {
-      setUploadError('Gagal upload foto.')
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : 'Gagal upload foto.'
+      setUploadError(errorMsg)
       setFotoPreview(null)
     } finally {
       setUploading(false)
@@ -79,46 +85,25 @@ export default function TambahLaporanForm({ jenisList, wilayahList }: Props) {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--background)' }}>
-      {/* Simple top bar */}
-      <div style={{
-        background: 'var(--surface)',
-        borderBottom: '1px solid var(--border)',
-        padding: '0 24px',
-      }}>
-        <div style={{
-          maxWidth: '800px',
-          margin: '0 auto',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          height: '64px',
-        }}>
-          <Link href="/dashboard" style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            textDecoration: 'none',
-            color: 'var(--text-muted)',
-            fontWeight: 600,
-            fontSize: '0.9rem',
-          }}>
-            ← Kembali ke Dashboard
-          </Link>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{
-              fontSize: '1rem',
-              fontWeight: 700,
-              color: 'var(--foreground)',
-            }}>
-              ➕ Tambah Laporan Baru
-            </span>
-            <ThemeToggle />
-          </div>
-        </div>
+    <main style={{ maxWidth: '800px', margin: '0 auto', padding: '24px 16px' }}>
+      <div className="animate-fade-in" style={{ marginBottom: '24px' }}>
+        <h1
+          style={{
+            fontSize: '1.8rem',
+            fontWeight: 800,
+            background: 'linear-gradient(135deg, var(--primary-dark), var(--primary-light))',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            marginBottom: '6px',
+          }}
+        >
+          ➕ Tambah Laporan Sampah
+        </h1>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem' }}>
+          Laporkan sampah yang telah dipilah untuk dijadwalkan penimbangan dan raih poin reward
+        </p>
       </div>
-
-      <main style={{ maxWidth: '800px', margin: '0 auto', padding: '32px 24px' }}>
         {/* Success Message */}
         {(state as { success?: boolean })?.success && (
           <div className="animate-fade-in" style={{
@@ -267,7 +252,7 @@ export default function TambahLaporanForm({ jenisList, wilayahList }: Props) {
             </div>
           </div>
 
-          {/* Section 3: Upload Foto (WAJIB - Soal 5) */}
+          {/* Section 3: Upload Foto Bukti */}
           <div className="glass-card animate-fade-in stagger-3" style={{ opacity: 0, padding: '28px', marginBottom: '32px' }}>
             <h2 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '6px' }}>
               📸 Upload Foto Bukti <span style={{ color: 'var(--danger)', fontSize: '0.85rem' }}>*wajib</span>
@@ -279,7 +264,7 @@ export default function TambahLaporanForm({ jenisList, wilayahList }: Props) {
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/jpeg,image/png,image/webp"
+              accept="image/jpeg,image/png,image/webp,image/*"
               onChange={handleFileChange}
               style={{ display: 'none' }}
             />
@@ -336,13 +321,14 @@ export default function TambahLaporanForm({ jenisList, wilayahList }: Props) {
               <div
                 className="upload-area"
                 onClick={() => fileInputRef.current?.click()}
+                style={{ cursor: 'pointer' }}
               >
-                <div style={{ fontSize: '3rem', marginBottom: '12px', opacity: 0.6 }}>📷</div>
-                <p style={{ fontWeight: 600, marginBottom: '4px', color: 'var(--foreground)' }}>
-                  Klik untuk upload foto
+                <div style={{ fontSize: '3rem', marginBottom: '12px', opacity: 0.7 }}>📸</div>
+                <p style={{ fontWeight: 700, marginBottom: '4px', color: 'var(--foreground)' }}>
+                  Ambil Foto Langsung atau Pilih dari Galeri
                 </p>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-                  atau drag &amp; drop file di sini
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                  Format JPG, PNG, atau WebP (maksimal 5MB)
                 </p>
               </div>
             )}
@@ -389,13 +375,12 @@ export default function TambahLaporanForm({ jenisList, wilayahList }: Props) {
             </button>
           </div>
         </form>
-      </main>
 
-      <style>{`
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
-    </div>
+        <style>{`
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+        `}</style>
+      </main>
   )
 }

@@ -1,7 +1,6 @@
 import { prisma } from '@/app/lib/db'
 import { getSession } from '@/app/lib/session'
 import { redirect } from 'next/navigation'
-import Navbar from '@/app/components/Navbar'
 import RewardClient from './RewardClient'
 
 export default async function RewardsPage() {
@@ -56,10 +55,7 @@ export default async function RewardsPage() {
   }))
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--background)' }}>
-      <Navbar userName={user.nama} role={user.role} />
-
-      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px' }}>
+    <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px 16px' }}>
         <div className="animate-fade-in" style={{ marginBottom: '28px' }}>
           <h1 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '8px' }}>
             🎁 <span className="gradient-text">Rewards &amp; Hadiah</span>
@@ -75,6 +71,5 @@ export default async function RewardsPage() {
           userPoin={user.poin}
         />
       </main>
-    </div>
   )
 }

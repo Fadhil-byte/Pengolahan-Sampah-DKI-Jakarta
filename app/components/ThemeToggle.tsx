@@ -1,24 +1,24 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useSyncExternalStore } from 'react'
+
+const emptySubscribe = () => () => {}
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light')
-  const [mounted, setMounted] = useState(false)
+  const isClient = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  )
 
-  useEffect(() => {
-    setMounted(true)
-    const stored = localStorage.getItem('theme') as 'light' | 'dark' | null
-    if (stored) {
-      setTheme(stored)
-      document.documentElement.classList.remove('light', 'dark')
-      document.documentElement.classList.add(stored)
-    } else {
-      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-      const defaultTheme = isDark ? 'dark' : 'light'
-      setTheme(defaultTheme)
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('theme') as 'light' | 'dark' | null
+      if (stored) return stored
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
     }
-  }, [])
+    return 'light'
+  })
 
   function toggleTheme() {
     const nextTheme = theme === 'light' ? 'dark' : 'light'
@@ -28,7 +28,7 @@ export default function ThemeToggle() {
     document.documentElement.classList.add(nextTheme)
   }
 
-  if (!mounted) {
+  if (!isClient) {
     return (
       <button
         style={{

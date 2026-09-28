@@ -52,3 +52,13 @@ next-env.d.ts
 
 # uploads
 /public/uploads
+
+# User manual build files & drafts
+panduan_lengkap*
+paduan_lengkap*
+generate_perfect*
+USER_MANUAL.md
+user_manual.md
+screenshots_manual/
+slide_assets/
+slide_preview/

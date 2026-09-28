@@ -10,8 +10,6 @@ type WilayahItem = { id: string; namaWilayah: string; totalLaporan: number }
 function MasterSection({
   title,
   items,
-  itemKey,
-  labelKey,
   placeholder,
   onAdd,
   onDelete,
@@ -19,8 +17,6 @@ function MasterSection({
 }: {
   title: string
   items: { id: string; label: string; totalLaporan: number }[]
-  itemKey: string
-  labelKey: string
   placeholder: string
   onAdd: (name: string) => Promise<{ error?: string; success?: boolean } | undefined>
   onDelete: (id: string) => Promise<{ error?: string; success?: boolean } | undefined>
@@ -179,8 +175,6 @@ export default function MasterDataClient({
       <MasterSection
         title="🏷️ Jenis Sampah"
         items={jenisList.map((j) => ({ id: j.id, label: j.namaJenis, totalLaporan: j.totalLaporan }))}
-        itemKey="id"
-        labelKey="namaJenis"
         placeholder="Contoh: Elektronik"
         onAdd={handleAddJenis}
         onDelete={handleDeleteJenis}
@@ -189,8 +183,6 @@ export default function MasterDataClient({
       <MasterSection
         title="📍 Wilayah / Kecamatan"
         items={wilayahList.map((w) => ({ id: w.id, label: w.namaWilayah, totalLaporan: w.totalLaporan }))}
-        itemKey="id"
-        labelKey="namaWilayah"
         placeholder="Contoh: Menteng"
         onAdd={handleAddWilayah}
         onDelete={handleDeleteWilayah}

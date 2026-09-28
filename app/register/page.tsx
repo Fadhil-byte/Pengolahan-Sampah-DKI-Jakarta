@@ -3,35 +3,95 @@
 import { register } from '@/app/actions/auth'
 import { useActionState } from 'react'
 import Link from 'next/link'
+import ThemeToggle from '@/app/components/ThemeToggle'
 
 export default function RegisterPage() {
   const [state, action, pending] = useActionState(register, undefined)
 
   return (
     <div
-      className="gradient-bg-hero"
       style={{
         minHeight: '100vh',
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '24px',
+        flexDirection: 'column',
+        background: 'var(--background)',
       }}
     >
-      {/* Decorative floating elements */}
-      <div style={{ position: 'fixed', top: '10%', left: '8%', fontSize: '3rem', opacity: 0.15 }} className="animate-float">🌱</div>
-      <div style={{ position: 'fixed', top: '25%', right: '10%', fontSize: '2.5rem', opacity: 0.12, animationDelay: '1s' }} className="animate-float">🌏</div>
-      <div style={{ position: 'fixed', bottom: '20%', left: '12%', fontSize: '2rem', opacity: 0.1, animationDelay: '2s' }} className="animate-float">♻️</div>
-      <div style={{ position: 'fixed', bottom: '10%', right: '15%', fontSize: '2.5rem', opacity: 0.12, animationDelay: '0.5s' }} className="animate-float">🌿</div>
-
-      <div
-        className="glass-card animate-fade-in-scale"
+      {/* Top Header */}
+      <header
+        className="glass-card"
         style={{
-          width: '100%',
-          maxWidth: '440px',
-          padding: '40px',
+          position: 'sticky',
+          top: 0,
+          zIndex: 50,
+          borderRadius: 0,
+          borderTop: 'none',
+          borderLeft: 'none',
+          borderRight: 'none',
+          borderBottom: '1px solid var(--border)',
+          padding: '0 20px',
         }}
       >
+        <div
+          style={{
+            maxWidth: '1200px',
+            margin: '0 auto',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            height: '60px',
+          }}
+        >
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
+            <span style={{ fontSize: '1.4rem' }}>🌱</span>
+            <span
+              style={{
+                fontSize: '1.1rem',
+                fontWeight: 800,
+                background: 'linear-gradient(135deg, var(--primary-dark), var(--primary-light))',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              SampahKu
+            </span>
+          </Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Link href="/" className="btn-secondary" style={{ textDecoration: 'none', padding: '6px 14px', fontSize: '0.82rem' }}>
+              ← Beranda
+            </Link>
+            <ThemeToggle />
+          </div>
+        </div>
+      </header>
+
+      {/* Main Form Content */}
+      <div
+        className="gradient-bg-hero"
+        style={{
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 'clamp(24px, 5vw, 48px) clamp(16px, 4vw, 24px)',
+          position: 'relative',
+        }}
+      >
+        {/* Decorative floating elements */}
+        <div style={{ position: 'fixed', top: '15%', left: '8%', fontSize: '3rem', opacity: 0.15 }} className="animate-float hide-on-mobile">🌱</div>
+        <div style={{ position: 'fixed', top: '25%', right: '10%', fontSize: '2.5rem', opacity: 0.12, animationDelay: '1s' }} className="animate-float hide-on-mobile">🌏</div>
+        <div style={{ position: 'fixed', bottom: '20%', left: '12%', fontSize: '2rem', opacity: 0.1, animationDelay: '2s' }} className="animate-float hide-on-mobile">♻️</div>
+        <div style={{ position: 'fixed', bottom: '30%', right: '15%', fontSize: '2.5rem', opacity: 0.12, animationDelay: '0.5s' }} className="animate-float hide-on-mobile">🌿</div>
+
+        <div
+          className="glass-card animate-fade-in-scale"
+          style={{
+            width: '100%',
+            maxWidth: '440px',
+            padding: 'clamp(20px, 5vw, 40px)',
+          }}
+        >
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <div style={{ fontSize: '3rem', marginBottom: '12px' }}>🌱</div>
@@ -193,7 +253,22 @@ export default function RegisterPage() {
             </Link>
           </p>
         </div>
+        </div>
       </div>
+
+      {/* Auth Footer */}
+      <footer
+        style={{
+          padding: '20px',
+          textAlign: 'center',
+          borderTop: '1px solid var(--border)',
+          background: 'var(--surface)',
+          fontSize: '0.8rem',
+          color: 'var(--text-muted)',
+        }}
+      >
+        © 2026 Pemerintah Provinsi DKI Jakarta — Dinas Lingkungan Hidup. Seluruh hak cipta dilindungi.
+      </footer>
 
       <style>{`
         @keyframes spin {

@@ -1,12 +1,7 @@
 import * as z from 'zod'
 
 // ============================================================
-// Soal 1 & 2: Validasi Register
-// - Nama wajib diisi (min 2 karakter)
-// - Email harus valid & unik (validasi format di Next.js, unique di Prisma/DB)
-// - noHp wajib diisi & unik
-// - NIK wajib diisi & unik
-// - Password min 6 karakter
+// Skema Validasi Autentikasi Pengguna
 // ============================================================
 export const RegisterFormSchema = z.object({
   nama: z
@@ -44,10 +39,7 @@ export const LoginFormSchema = z.object({
 })
 
 // ============================================================
-// Soal 3 & 5: Validasi Laporan
-// - Berat sampah harus lebih dari 0 kg (Soal 5 point 1)
-// - jenisSampahId dan wilayahId wajib dipilih (FK)
-// - imageUrl wajib diisi (Soal 5 point 4: setiap laporan harus memiliki foto)
+// Skema Validasi Laporan Sampah
 // ============================================================
 export const LaporanFormSchema = z.object({
   jenisSampahId: z

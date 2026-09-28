@@ -58,7 +58,7 @@ export default function UsersClient({ users, currentUserId }: { users: User[]; c
         />
       </div>
 
-      <div style={{ background: 'var(--surface)', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+      <div className="table-responsive-wrapper" style={{ background: 'var(--surface)', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border)' }}>
         <div style={{ overflowX: 'auto' }}>
           <table className="data-table">
             <thead>

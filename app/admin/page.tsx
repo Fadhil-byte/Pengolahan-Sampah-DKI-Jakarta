@@ -69,8 +69,8 @@ export default async function AdminDashboardPage() {
   ]
 
   return (
-    <main style={{ padding: '32px 28px' }}>
-      <div className="animate-fade-in" style={{ marginBottom: '28px' }}>
+    <main style={{ padding: '24px 16px', maxWidth: '1400px', margin: '0 auto' }}>
+      <div className="animate-fade-in" style={{ marginBottom: '24px' }}>
         <h1 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '6px' }}>
           📊 <span className="gradient-text">Dashboard Admin</span>
         </h1>
@@ -80,21 +80,21 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px', marginBottom: '32px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '14px', marginBottom: '28px' }}>
         {stats.map((s, i) => (
           <div key={s.label} className={`stat-card animate-fade-in stagger-${i + 1}`} style={{ opacity: 0 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div className="stat-icon" style={{ background: s.color }}>{s.icon}</div>
               <div>
-                <div className="stat-value">{s.value}</div>
-                <div className="stat-label">{s.label}</div>
+                <div className="stat-value" style={{ fontSize: '1.4rem' }}>{s.value}</div>
+                <div className="stat-label" style={{ fontSize: '0.78rem' }}>{s.label}</div>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '28px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))', gap: '20px', marginBottom: '28px' }}>
         {/* Top Jenis Sampah */}
         <div className="glass-card animate-fade-in stagger-2" style={{ opacity: 0, padding: '24px' }}>
           <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '16px' }}>🏷️ Distribusi Jenis Sampah</h2>
@@ -164,7 +164,7 @@ export default async function AdminDashboardPage() {
             Lihat Semua →
           </Link>
         </div>
-        <div style={{ background: 'var(--surface)', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+        <div className="table-responsive-wrapper" style={{ background: 'var(--surface)', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border)' }}>
           <div style={{ overflowX: 'auto' }}>
             <table className="data-table">
               <thead>

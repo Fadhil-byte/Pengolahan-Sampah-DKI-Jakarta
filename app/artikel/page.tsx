@@ -1,7 +1,8 @@
 import { prisma } from '@/app/lib/db'
 import Link from 'next/link'
-import ThemeToggle from '@/app/components/ThemeToggle'
+import Navbar from '@/app/components/Navbar'
 import { getSession } from '@/app/lib/session'
+import Footer from '@/app/components/Footer'
 
 export const metadata = {
   title: 'Artikel Edukasi Lingkungan — SampahKu DKI Jakarta',
@@ -15,6 +16,14 @@ export default async function ArtikelPage({
 }) {
   const { kategori, q } = await searchParams
   const session = await getSession()
+  let userName = ''
+  if (session) {
+    const user = await prisma.user.findUnique({
+      where: { id: session.userId },
+      select: { nama: true },
+    })
+    userName = user?.nama || ''
+  }
 
   const kategoriList = await prisma.kategoriArtikel.findMany({
     include: { _count: { select: { artikel: true } } },
@@ -54,43 +63,11 @@ export default async function ArtikelPage({
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--background)' }}>
+    <div className={session ? "has-mobile-bottom-nav" : ""} style={{ minHeight: '100vh', background: 'var(--background)' }}>
       {/* Header / Nav */}
-      <nav className="glass-card" style={{
-        position: 'sticky', top: 0, zIndex: 50,
-        borderRadius: 0, borderTop: 'none', borderLeft: 'none', borderRight: 'none',
-        borderBottom: '1px solid var(--border)', padding: '0 24px',
-      }}>
-        <div style={{
-          maxWidth: '1200px', margin: '0 auto',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '64px',
-        }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-            <span style={{ fontSize: '1.5rem' }}>♻️</span>
-            <span style={{
-              fontSize: '1.1rem', fontWeight: 800,
-              background: 'linear-gradient(135deg, var(--primary-dark), var(--primary-light))',
-              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-            }}>SampahKu</span>
-          </Link>
+      <Navbar userName={userName} role={session?.role} />
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <ThemeToggle />
-            {session ? (
-              <Link href={session.role === 'ADMIN' ? '/admin' : '/dashboard'} className="btn-primary" style={{ textDecoration: 'none', padding: '8px 20px' }}>
-                {session.role === 'ADMIN' ? '⚙️ Admin' : '📊 Dashboard'}
-              </Link>
-            ) : (
-              <>
-                <Link href="/login" className="btn-secondary" style={{ textDecoration: 'none', padding: '8px 20px' }}>Masuk</Link>
-                <Link href="/register" className="btn-primary" style={{ textDecoration: 'none', padding: '8px 20px' }}>Daftar</Link>
-              </>
-            )}
-          </div>
-        </div>
-      </nav>
-
-      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px' }}>
+      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px 16px' }}>
         {/* Hero Section */}
         <div className="animate-fade-in" style={{ marginBottom: '36px', textAlign: 'center' }}>
           <div style={{
@@ -239,10 +216,8 @@ export default async function ArtikelPage({
         )}
       </main>
 
-      {/* Footer */}
-      <div style={{ textAlign: 'center', padding: '32px 24px', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-        © 2026 SampahKu — Sistem Pengelolaan Sampah DKI Jakarta
-      </div>
+      {/* Shared Footer */}
+      <Footer />
     </div>
   )
 }

@@ -27,7 +27,6 @@ const STATUS_CONFIG: Record<string, { label: string; icon: string; cls: string }
 export default function VerifikasiClient({
   laporanList,
   jenisList,
-  currentStatus,
   currentJenis,
 }: {
   laporanList: Laporan[]
@@ -82,7 +81,7 @@ export default function VerifikasiClient({
       </div>
 
       {/* Table */}
-      <div style={{ background: 'var(--surface)', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+      <div className="table-responsive-wrapper" style={{ background: 'var(--surface)', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border)' }}>
         <div style={{ overflowX: 'auto' }}>
           <table className="data-table">
             <thead>

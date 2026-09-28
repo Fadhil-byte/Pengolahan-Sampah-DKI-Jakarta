@@ -1,7 +1,6 @@
 import { prisma } from '@/app/lib/db'
 import { getSession } from '@/app/lib/session'
 import { redirect } from 'next/navigation'
-import Navbar from '@/app/components/Navbar'
 import ProfilForm from './ProfilForm'
 
 export default async function ProfilPage() {
@@ -30,9 +29,7 @@ export default async function ProfilPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--background)' }}>
-      <Navbar userName={user.nama} role={user.role} />
-      <main style={{ maxWidth: '800px', margin: '0 auto', padding: '32px 24px' }}>
+    <main style={{ maxWidth: '800px', margin: '0 auto', padding: '24px 16px' }}>
         <div className="animate-fade-in" style={{ marginBottom: '28px' }}>
           <h1 style={{
             fontSize: '1.8rem',
@@ -52,6 +49,5 @@ export default async function ProfilPage() {
 
         <ProfilForm user={userData} />
       </main>
-    </div>
   )
 }

@@ -24,7 +24,7 @@ export default async function AdminUsersPage() {
   }))
 
   return (
-    <main style={{ padding: '32px 28px' }}>
+    <main style={{ padding: '24px 16px', maxWidth: '1400px', margin: '0 auto' }}>
       <div className="animate-fade-in" style={{ marginBottom: '24px' }}>
         <h1 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '6px' }}>
           👥 <span className="gradient-text">Manajemen Pengguna</span>
